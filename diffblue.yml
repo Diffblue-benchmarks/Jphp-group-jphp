@@ -1,0 +1,1111 @@
+# Copyright 2019 Diffblue Limited. All Rights Reserved.
+cbmcArguments:
+  # Do not generate coverage comments on generated tests.
+  java-generate-no-comments: true
+  # Constrain the size of arrays created in the analyzed code.
+  java-max-vla-length: 100000
+phases:
+  -
+    # Phase 0 PRETTY, SIMPLE and SMART - pretty tests, do not test private methods directly, Smart-Harness
+    timeout: 180
+    cbmcArguments:
+      # Use simple models first containers (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # Instrument the file as opposed to the function only
+      cover-only: file
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Instantiate classes using the simplest constructor strategy
+      smart-harness: simplest-constructor-and-nondet
+  -
+    # Phase 1 PRETTY AND COMPLEX - standard models only, pretty tests, do not test private methods directly, input factory
+    timeout: 180
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 2
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+      # Limit input factory recursive depth (default 0 = no recursion allowed)
+      java-test-input-factory-bmc-recursion-limit: 4
+  -
+    # Phase 2 FIFO Strategy - pretty tests, do not test private methods directly, fifo
+    timeout: 100
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Add constraint that strings are printable
+      max-nondet-string-length: 100
+      # Explores the program tree breadth-first.
+      paths: fifo
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: false
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 3 Exceptions - do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 30
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 4 Direct testing - test private methods directly, increased reflection
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # If the logs contain output of the following then proceed to phase X
+    nextPhase:
+      # If the function is not analysable then do not pass onto the next phase
+      not_analyzed: null
+  -
+    # PHASE 5 Mocking - aggressive mocking, do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 3000
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Only load the class (and related inner/outer classes) containing the method under test,
+      load-containing-class-only: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 100
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+# Copyright 2019 Diffblue Limited. All Rights Reserved.
+cbmcArguments:
+  # Do not generate coverage comments on generated tests.
+  java-generate-no-comments: true
+  # Constrain the size of arrays created in the analyzed code.
+  java-max-vla-length: 100000
+phases:
+  -
+    # Phase 0 PRETTY, SIMPLE and SMART - pretty tests, do not test private methods directly, Smart-Harness
+    timeout: 180
+    cbmcArguments:
+      # Use simple models first containers (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # Instrument the file as opposed to the function only
+      cover-only: file
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Instantiate classes using the simplest constructor strategy
+      smart-harness: simplest-constructor-and-nondet
+  -
+    # Phase 1 PRETTY AND COMPLEX - standard models only, pretty tests, do not test private methods directly, input factory
+    timeout: 180
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 2
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+      # Limit input factory recursive depth (default 0 = no recursion allowed)
+      java-test-input-factory-bmc-recursion-limit: 4
+  -
+    # Phase 2 FIFO Strategy - pretty tests, do not test private methods directly, fifo
+    timeout: 100
+    cbmcArguments:
+      # Use the standard models library
+      classpath: '/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Add constraint that strings are printable
+      max-nondet-string-length: 100
+      # Explores the program tree breadth-first.
+      paths: fifo
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: false
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 3 Exceptions - do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: false
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 30
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+  -
+    # Phase 4 Direct testing - test private methods directly, increased reflection
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 1500
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 10
+      # Bound the length of input strings.
+      max-nondet-string-length: 10
+      # Add constraint that strings are printable
+      string-printable: true
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: false
+      # Set an upper bound on loop unwinding.
+      unwind: 1
+      # Set string input value
+      string-input-value: ["foo", "Bar", "BAZ", "1234", "1a 2b 3c", "A1B2C3", "a,b,c", "1", "2", "3", "a/b/c", "a'b'c", ",", "/", "'"]
+      # If the logs contain output of the following then proceed to phase X
+    nextPhase:
+      # If the function is not analysable then do not pass onto the next phase
+      not_analyzed: null
+  -
+    # PHASE 5 Mocking - aggressive mocking, do not test private methods directly
+    timeout: 180
+    cbmcArguments:
+      # Use simple models containers first (ArrayList, HashMap, HashSet,...) will have a maximum size of one.
+      classpath: '/tools/cbmc/models-simple-overlay.jar:/tools/cbmc/models.jar:.'
+      # Set a limit on the number of instructions that can be generated as part of a test trace.
+      depth: 3000
+      # never initialize reference-typed parameter to the entry point with null
+      java-assume-inputs-non-null: true
+      # Only load the class (and related inner/outer classes) containing the method under test,
+      load-containing-class-only: true
+      # Maximum allowed length for an array passed as test input.
+      max-nondet-array-length: 30
+      # Bound the length of input strings.
+      max-nondet-string-length: 100
+      # Add constraint that strings are printable
+      string-printable: false
+      # Make implicit runtime exceptions explicit.
+      throw-runtime-exceptions: true
+      # Set an upper bound on loop unwinding.
+      unwind: 3
+      # Do not test any methods that have the specified access level.
+      do-not-test-methods-with-access: [private]
+      # Instrument the entry point function only.
+      cover-function-only: false
+      # instrument the file as opposed to the function only
+      cover-only: file
+units:
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$UnsignedSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$Segment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory$Type.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$Segment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory$Type.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/MemoryStringUtils.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/MemoryStringUtils.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$LongSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$UnsignedSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$Segment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory$Type.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$BinarySegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$HexSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/StringMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/StringMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/LongMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/LongMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/BinaryMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/BinaryMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/OperatorUtils.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/OperatorUtils.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/TraceInfo.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/TraceInfo.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/DoubleMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/DoubleMemory.java
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/StringUtils.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/StringUtils.java
+ - target:
+   - dir: exts/jphp-zend-ext/build/classes/java/main
+     file: org/develnext/jphp/zend/ext/standard/StringFunctions.class
+     sourceDir: exts/jphp-zend-ext/src/main/java
+     sourceFile: org/develnext/jphp/zend/ext/standard/StringFunctions.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/loader/sourcemap/SourceMap.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/loader/sourcemap/SourceMap.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/exceptions/FatalException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/exceptions/FatalException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ModuleEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ModuleEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/BinaryMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/BinaryMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Reflection$Getter.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Reflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Reflection$Signature.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Reflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Reflection$Optional.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Reflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Reflection$Setter.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Reflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/exceptions/CriticalException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/exceptions/CriticalException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$UnsignedSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/ReferenceMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/ReferenceMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ParameterEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ParameterEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ClassEntity$InvalidProperty.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ClassEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/exceptions/support/PhpException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/exceptions/support/PhpException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/exceptions/support/ErrorType.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/exceptions/support/ErrorType.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/message/SystemMessage.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/message/SystemMessage.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ClassEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ClassEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory$Type.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/handler/ErrorReportHandler.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/handler/ErrorReportHandler.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Reflection$Property.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Reflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ClassEntity$InvalidConstant.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ClassEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF$ConstantSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+   - dir: exts/jphp-zend-ext/build/classes/java/main
+     file: org/develnext/jphp/zend/ext/standard/StringFunctions$1.class
+     sourceDir: exts/jphp-zend-ext/src/main/java
+     sourceFile: org/develnext/jphp/zend/ext/standard/StringFunctions.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/DoubleMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/DoubleMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/handler/ErrorHandler.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/handler/ErrorHandler.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ConstantEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ConstantEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/handler/ExceptionHandler.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/handler/ExceptionHandler.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/handler/EntityFetchHandler.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/handler/EntityFetchHandler.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/lang/exception/BaseParseError.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/lang/exception/BaseParseError.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/lang/ForeachIterator.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/lang/ForeachIterator.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/exceptions/TodoException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/exceptions/TodoException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/support/TypeChecker.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/support/TypeChecker.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/Messages$Item.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/Messages.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/MemoryOperation$1.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/MemoryOperation.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/message/CustomSystemMessage.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/message/CustomSystemMessage.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/DigestUtils.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/DigestUtils.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/ext/java/JavaReflection.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/ext/java/JavaReflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ClassEntity$ImplementsResult.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ClassEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/ext/java/JavaException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/ext/java/JavaException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/exceptions/CustomErrorException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/exceptions/CustomErrorException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/WrapCompilePropertyEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/WrapCompilePropertyEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/FunctionEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/FunctionEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/invoke/InvokeHelper.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/invoke/InvokeHelper.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/PropertyEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/PropertyEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/Pair.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/Pair.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/CallbackW.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/CallbackW.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF$SetNegatedSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/CompileMethodEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/CompileMethodEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ClassEntity$SignatureResult.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ClassEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/StringUtils.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/StringUtils.java
+   - dir: exts/jphp-zend-ext/build/classes/java/main
+     file: org/develnext/jphp/zend/ext/standard/HttpQueryBuilder.class
+     sourceDir: exts/jphp-zend-ext/src/main/java
+     sourceFile: org/develnext/jphp/zend/ext/standard/HttpQueryBuilder.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/MemoryOperation$ParametrizedClass.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/MemoryOperation.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/CompileMethodEntity$CompileMethod$Method$1.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/CompileMethodEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/ArrayMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/ArrayMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF$ScientificSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/ModuleManager.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/ModuleManager.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/MethodEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/MethodEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$BinarySegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/CompilePropertyEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/CompilePropertyEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/lang/BaseException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/lang/BaseException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/LongMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/LongMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/MemoryOperation$3.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/MemoryOperation.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/support/Entity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/support/Entity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/support/TypeChecker$ClassName.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/support/TypeChecker.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF$SetSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/support/TypeChecker$Simple.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/support/TypeChecker.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/support/ReflectionUtils.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/support/ReflectionUtils.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Runtime$Immutable.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Runtime.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/loader/RuntimeClassLoader.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/loader/RuntimeClassLoader.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/ObjectMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/ObjectMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/support/TypeChecker$EnumClass.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/support/TypeChecker.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/lang/exception/BaseBaseException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/lang/exception/BaseBaseException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF$HexSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/KeyValueMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/KeyValueMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/WrapCompileMethodEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/WrapCompileMethodEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$CharSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/MemoryUtils$Unconverter.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/MemoryUtils.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$LongSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ClassEntity$InvalidMethod.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ClassEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/invoke/InvokeArgumentHelper.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/invoke/InvokeArgumentHelper.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/StringBuilderMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/StringBuilderMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/ArrayMapEntryMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/ArrayMapEntryMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/MemoryOperation$2.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/MemoryOperation.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Reflection$WrapInterface.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Reflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/JVMStackTracer.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/JVMStackTracer.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$HexSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: exts/jphp-zend-ext/build/classes/java/main
+     file: org/develnext/jphp/zend/ext/standard/StringFunctions$2.class
+     sourceDir: exts/jphp-zend-ext/src/main/java
+     sourceFile: org/develnext/jphp/zend/ext/standard/StringFunctions.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/invoke/InvokeHelper$1.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/invoke/InvokeHelper.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$StringSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/CompileMethodEntity$CompileMethod.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/CompileMethodEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/invoke/ObjectInvokeHelper.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/invoke/ObjectInvokeHelper.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/invoke/Invoker.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/invoke/Invoker.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ParameterEntity$TypeHintingChecker.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ParameterEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/CompileMethodEntity$InjectMemoryOperation.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/CompileMethodEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF$Segment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ClassEntity$PropertyResult.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ClassEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/ArrayMemoryMap.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/ArrayMemoryMap.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/lang/Closure.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/lang/Closure.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/output/OutputBuffer.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/output/OutputBuffer.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/Function.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/Function.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/IList.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/IList.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/IList$Iter.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/IList.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/ArrayMemoryList.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/ArrayMemoryList.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/MemoryOperation.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/MemoryOperation.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/ArrayMemoryMap$EntriesIterator.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/ArrayMemoryMap.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/Environment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/Environment.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/ArrayMemory$1.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/ArrayMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/Context.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/Context.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/support/AbstractFunctionEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/support/AbstractFunctionEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/TraceInfo.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/TraceInfo.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/DieException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/DieException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/exceptions/support/ErrorException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/exceptions/support/ErrorException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/ext/support/compile/CompileFunction$Method.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/ext/support/compile/CompileFunction.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/CompileMethodEntity$CompileMethod$Method$2.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/CompileMethodEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/ArrayMemoryMap$EntrySet.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/ArrayMemoryMap.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/lang/IObject.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/lang/IObject.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/ArrayMemoryMap$LinkIterator.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/ArrayMemoryMap.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/MemoryUtils.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/MemoryUtils.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/StringMemory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/StringMemory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/ext/support/compile/CompileClass.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/ext/support/compile/CompileClass.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/ext/support/compile/CompileFunction.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/ext/support/compile/CompileFunction.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/JVMStackTracer$Item.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/JVMStackTracer.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Reflection$Name.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Reflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/lang/exception/BaseError.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/lang/exception/BaseError.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/GapList.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/GapList.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF$IntegerSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/wrap/ClassWrapper.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/wrap/ClassWrapper.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/SourceMappedTraceInfo.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/SourceMappedTraceInfo.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/ClassEntity$ExtendsResult.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/ClassEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/CallStackItem.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/CallStackItem.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$Segment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/memory/support/operation/array/ArrayMemoryOperation.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/memory/support/operation/array/ArrayMemoryOperation.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$TextSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/HintType.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/HintType.java
+   - dir: exts/jphp-zend-ext/build/classes/java/main
+     file: org/develnext/jphp/zend/ext/support/NaturalOrderComparator.class
+     sourceDir: exts/jphp-zend-ext/src/main/java
+     sourceFile: org/develnext/jphp/zend/ext/support/NaturalOrderComparator.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Reflection$Arg.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Reflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/lang/UncaughtException.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/lang/UncaughtException.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/CompileMethodEntity$CompileMethod$Method.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/CompileMethodEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/SplClassLoader.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/SplClassLoader.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/reflection/CompileMethodEntity$ParameterEntity.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/reflection/CompileMethodEntity.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF$StringSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/CallStack.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/CallStack.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/env/CompileScope.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/env/CompileScope.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$DoubleSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/annotation/Reflection$Namespace.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/annotation/Reflection.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/ext/support/compile/FunctionsContainer.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/ext/support/compile/FunctionsContainer.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/SScanF$WhitespaceSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/SScanF.java
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$BinarySegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$Segment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory$Type.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+ - target:
+   - dir: jphp-core/build/classes/java/main
+     file: org/develnext/jphp/core/common/TokenizeGrammarUtils.class
+     sourceDir: jphp-core/src
+     sourceFile: org/develnext/jphp/core/common/TokenizeGrammarUtils.java
+   - dir: jphp-core/build/classes/java/main
+     file: org/develnext/jphp/core/tokenizer/token/expr/value/StringExprToken$Quote.class
+     sourceDir: jphp-core/src
+     sourceFile: org/develnext/jphp/core/tokenizer/token/expr/value/StringExprToken.java
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$HexSegment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/util/PrintF$Segment.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/util/PrintF.java
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/Memory$Type.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/Memory.java
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/DigestUtils.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/DigestUtils.java
+ - target:
+   - dir: jphp-runtime/build/classes/java/main
+     file: php/runtime/common/GrammarUtils.class
+     sourceDir: jphp-runtime/src
+     sourceFile: php/runtime/common/GrammarUtils.java
